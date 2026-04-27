@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>AI Генератор Аватарок | Создай уникальную аватарку по описанию</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+            background: linear-gradient(135deg, #281B4A 0%, #1A1B41 50%, #0B0B1A 100%);
+            min-height: 100vh;
+            color: #F0F3FA;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Карточка генератора */
+        .generator-card {
+            background: rgba(20, 22, 45, 0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 32px;
+            padding: 2rem;
+            border: 1px solid rgba(138, 180, 248, 0.2);
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.5);
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #FFB7B2, #B5F0FF, #B5E6C3);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #9ca3d0;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        /* Поле ввода */
+        .input-group {
+            margin-bottom: 1.8rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.7rem;
+            font-size: 1rem;
+            color: #cdd9ff;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 1rem;
+            background: #0E0F1E;
+            border: 1px solid #2D325A;
+            border-radius: 20px;
+            color: white;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical;
+            transition: all 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #8ab4f8;
+            box-shadow: 0 0 0 3px rgba(138, 180, 248, 0.2);
+        }
+
+        /* Кнопки */
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+
+        .btn {
+            padding: 0.8rem 1.8rem;
+            border-radius: 50px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            background: #2D325A;
+            color: white;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #5C3E84, #2A4E6B);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            filter: brightness(1.05);
+        }
+
+        .btn-secondary {
+            background: rgba(138, 180, 248, 0.15);
+            border: 1px solid rgba(138, 180, 248, 0.4);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(138, 180, 248, 0.25);
+        }
+
+        /* Контейнер для аватарки */
+        .avatar-container {
+            text-align: center;
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: rgba(0,0,0,0.2);
+            border-radius: 32px;
+        }
+
+        .avatar-frame {
+            background: #0E0F1E;
+            border-radius: 50%;
+            width: 280px;
+            height: 280px;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 3px solid rgba(138, 180, 248, 0.5);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5);
+        }
+
+        .avatar-placeholder {
+            font-size: 5rem;
+            color: #5a6090;
+        }
+
+        .avatar-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .loader {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(138, 180, 248, 0.2);
+            border-radius: 50%;
+            border-top-color: #8ab4f8;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .info-block {
+            background: rgba(0,0,0,0.3);
+            border-radius: 24px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+            border: 1px dashed #5a6090;
+        }
+
+        .style-buttons {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+            justify-content: center;
+        }
+
+        .style-chip {
+            background: #1E213A;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: 1px solid transparent;
+        }
+
+        .style-chip:hover {
+            background: #2D325A;
+            border-color: #8ab4f8;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 1rem;
+            }
+            .avatar-frame {
+                width: 220px;
+                height: 220px;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="generator-card">
+        <h1>🎨 AI Генератор Аватарок</h1>
+        <p class="subtitle">Опишите свою идеальную аватарку — ИИ нарисует её за секунды!</p>
+
+        <div class="input-group">
+            <label>🧙‍♀️ Что должно быть на аватарке?</label>
+            <textarea id="promptInput" rows="4" placeholder="Примеры: рыцарь с фиолетовыми волосами и киберпанк-очками / милый лисёнок-волшебник в шляпе / абстрактный космический портрет в неоновых тонах..."></textarea>
+        </div>
+
+        <div class="style-buttons">
+            <span style="color:#9ca3d0; font-size:0.9rem;">🎭 Стиль:</span>
+            <div class="style-chip" data-style="digital art, cyberpunk, vibrant colors">Киберпанк</div>
+            <div class="style-chip" data-style="fantasy, magical, glowing">Фэнтези</div>
+            <div class="style-chip" data-style="cartoon, cute, kawaii">Кавайный</div>
+            <div class="style-chip" data-style="minimalist, line art, geometric">Минимализм</div>
+            <div class="style-chip" data-style="watercolor, soft, artistic">Акварель</div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn btn-primary" id="generateBtn">✨ Сгенерировать аватарку</button>
+            <button class="btn btn-secondary" id="downloadBtn" style="display:none;">💾 Скачать PNG</button>
+        </div>
+
+        <div class="avatar-container">
+            <div class="avatar-frame" id="avatarFrame">
+                <div class="avatar-placeholder" id="avatarPlaceholder">🤖</div>
+                <img id="avatarImage" class="avatar-image" style="display: none;" alt="Ваша аватарка">
+            </div>
+            <div id="statusText" style="font-size: 0.85rem; color: #9ca3d0;">Напишите описание и нажмите «Сгенерировать»</div>
+        </div>
+
+        <div class="info-block">
+            <p>⚡ <strong>Как это работает?</strong> Нейросеть превращает ваш текст в уникальное изображение. Сервис бесплатный, без регистрации. Аватарку можно скачать и использовать где угодно.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Основной сервис — Pollinations.AI (API, бесплатный, без ключа)
+    // Альтернативное API на случай проблем
+    let currentImageUrl = null;
+
+    function getPromptWithStyle() {
+        let basePrompt = document.getElementById('promptInput').value.trim();
+        if (!basePrompt) {
+            basePrompt = "красивая стилизованная аватарка, digital art, фэнтезийный портрет, яркие цвета";
+        }
+
+        // Если есть активный стиль
+        if (window.selectedStyle) {
+            return `${basePrompt}, ${window.selectedStyle}, avatar, profile picture, beautiful, detailed, high quality`;
+        }
+        return `${basePrompt}, avatar, profile picture, beautiful, detailed, high quality`;
+    }
+
+    // Генерация через Pollinations
+    async function generateWithPollinations(prompt) {
+        // API Pollinations: https://image.pollinations.ai/prompt/...
+        const encodedPrompt = encodeURIComponent(prompt);
+        const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=512&height=512&nologo=true&model=flux`;
+        return imageUrl;
+    }
+
+    // Резервная генерация через оригинальный эндпоинт
+    async function generateBackup(prompt) {
+        const encodedPrompt = encodeURIComponent(prompt);
+        return `https://image.pollinations.ai/prompt/${encodedPrompt}`;
+    }
+
+    async function generateAvatar() {
+        const prompt = getPromptWithStyle();
+        if (!prompt) {
+            alert("Введите описание аватарки");
+            return;
+        }
+
+        const avatarFrame = document.getElementById('avatarFrame');
+        const avatarImg = document.getElementById('avatarImage');
+        const placeholder = document.getElementById('avatarPlaceholder');
+        const statusDiv = document.getElementById('statusText');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const generateBtn = document.getElementById('generateBtn');
+
+        // UI: показываем лоадер
+        statusDiv.innerHTML = '<span class="loader"></span> ИИ рисует аватарку...';
+        placeholder.style.display = 'none';
+        avatarImg.style.display = 'none';
+        downloadBtn.style.display = 'none';
+        generateBtn.disabled = true;
+
+        try {
+            // Пробуем основной метод
+            let imageUrl = await generateWithPollinations(prompt);
+            currentImageUrl = imageUrl;
+
+            avatarImg.src = imageUrl;
+            avatarImg.style.display = 'block';
+            statusDiv.innerHTML = '✅ Готово! Кликните правой кнопкой мыши или нажмите «Скачать PNG», чтобы сохранить аватарку.';
+            downloadBtn.style.display = 'inline-block';
+
+            // Небольшой костыль для загрузки через fetch (из-за кешей)
+            avatarImg.onerror = async () => {
+                console.log("Ошибка загрузки, пробуем резервный URL");
+                const fallbackUrl = await generateBackup(prompt);
+                currentImageUrl = fallbackUrl;
+                avatarImg.src = fallbackUrl;
+                statusDiv.innerHTML = '✅ Аватарка готова (альтернативный источник).';
+            };
+        } catch (error) {
+            console.error(error);
+            statusDiv.innerHTML = '❌ Что-то пошло не так. Попробуйте изменить описание или повторить через минуту.';
+            placeholder.style.display = 'flex';
+            avatarImg.style.display = 'none';
+        } finally {
+            generateBtn.disabled = false;
+        }
+    }
+
+    // Скачивание PNG (конвертируем изображение в blob)
+    async function downloadImage() {
+        const img = document.getElementById('avatarImage');
+        if (!img.src || img.style.display === 'none') {
+            alert("Сначала сгенерируйте аватарку");
+            return;
+        }
+
+        try {
+            const response = await fetch(img.src);
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            const promptPreview = document.getElementById('promptInput').value.trim().slice(0, 30) || "avatar";
+            link.download = `avatar_${Date.now()}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        } catch (err) {
+            alert("Не удалось скачать. Попробуйте сохранить изображение через правую кнопку мыши.");
+        }
+    }
+
+    // Выбор стиля
+    window.selectedStyle = '';
+    document.querySelectorAll('.style-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            document.querySelectorAll('.style-chip').forEach(c => c.style.borderColor = 'transparent');
+            chip.style.borderColor = '#8ab4f8';
+            window.selectedStyle = chip.getAttribute('data-style');
+        });
+    });
+
+    // Установка примеров в поле по клику (доп. удобство)
+    const examples = [
+        "Рыцарь с фиолетовыми волосами и киберпанк-очками",
+        "Милый лисёнок-волшебник в остроконечной шляпе",
+        "Абстрактный космический портрет в неоновых тонах",
+        "Аниме-девушка с радужными глазами и огненными волосами",
+        "Минималистичный геометрический логотип-лицо"
+    ];
+    let exampleIndex = 0;
+    const textarea = document.getElementById('promptInput');
+    // Пример при фокусе если пусто
+    textarea.addEventListener('focus', () => {
+        if (!textarea.value.trim()) {
+            textarea.value = examples[exampleIndex % examples.length];
+            exampleIndex++;
+        }
+    });
+
+    // Обработчики кнопок
+    document.getElementById('generateBtn').addEventListener('click', generateAvatar);
+    document.getElementById('downloadBtn').addEventListener('click', downloadImage);
+
+    // Приветственное сообщение с советом
+    setTimeout(() => {
+        if (!textarea.value) {
+            textarea.value = "милый космический кот в скафандре на фоне звёзд, цифровая иллюстрация";
+        }
+    }, 500);
+</script>
+</body>
+</html>
