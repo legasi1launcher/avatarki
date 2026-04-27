@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>AI Генератор Аватарок | Создай уникальную аватарку по описанию</title>
+    <title>🎭 Генератор аватарок по тексту | DiceBear AI</title>
     <style>
         * {
             margin: 0;
@@ -12,397 +12,471 @@
         }
 
         body {
-            font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
-            background: linear-gradient(135deg, #281B4A 0%, #1A1B41 50%, #0B0B1A 100%);
+            font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
             min-height: 100vh;
-            color: #F0F3FA;
-            padding: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        /* Карточка генератора */
-        .generator-card {
-            background: rgba(20, 22, 45, 0.6);
-            backdrop-filter: blur(12px);
-            border-radius: 32px;
-            padding: 2rem;
-            border: 1px solid rgba(138, 180, 248, 0.2);
-            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.5);
-            margin-bottom: 2rem;
+        .glass-card {
+            background: rgba(20, 22, 50, 0.65);
+            backdrop-filter: blur(16px);
+            border-radius: 48px;
+            padding: 30px 25px 35px;
+            max-width: 580px;
+            width: 100%;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.4), 0 0 0 1px rgba(138, 180, 248, 0.15);
+            transition: all 0.3s;
         }
 
         h1 {
-            font-size: 2.8rem;
+            font-size: 2.2rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #FFB7B2, #B5F0FF, #B5E6C3);
+            text-align: center;
+            background: linear-gradient(135deg, #FFF, #B5F0FF, #D9B4FF);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            text-align: center;
-            margin-bottom: 0.5rem;
+            margin-bottom: 8px;
         }
 
-        .subtitle {
+        .sub {
             text-align: center;
-            color: #9ca3d0;
-            margin-bottom: 2rem;
-            font-size: 1.1rem;
+            color: #b2bbdf;
+            margin-bottom: 28px;
+            font-size: 0.95rem;
         }
 
         /* Поле ввода */
         .input-group {
-            margin-bottom: 1.8rem;
+            margin-bottom: 22px;
         }
 
         label {
-            display: block;
             font-weight: 600;
-            margin-bottom: 0.7rem;
-            font-size: 1rem;
-            color: #cdd9ff;
+            display: block;
+            margin-bottom: 10px;
+            color: #e2eaff;
+            font-size: 0.9rem;
+            letter-spacing: 0.3px;
         }
 
         textarea {
             width: 100%;
-            padding: 1rem;
-            background: #0E0F1E;
-            border: 1px solid #2D325A;
-            border-radius: 20px;
+            background: #0e0f1f;
+            border: 1px solid #2e3660;
+            border-radius: 28px;
+            padding: 14px 20px;
             color: white;
             font-size: 1rem;
             font-family: inherit;
             resize: vertical;
-            transition: all 0.2s;
+            transition: 0.2s;
         }
 
         textarea:focus {
             outline: none;
-            border-color: #8ab4f8;
-            box-shadow: 0 0 0 3px rgba(138, 180, 248, 0.2);
+            border-color: #8a9bf8;
+            box-shadow: 0 0 0 3px rgba(138, 155, 248, 0.3);
         }
 
-        /* Кнопки */
-        .button-group {
+        /* Выбор стиля */
+        .style-selector {
+            margin-bottom: 28px;
+        }
+        .style-buttons {
             display: flex;
-            gap: 1rem;
             flex-wrap: wrap;
-            margin: 1rem 0;
+            gap: 10px;
+            margin-top: 8px;
         }
-
-        .btn {
-            padding: 0.8rem 1.8rem;
-            border-radius: 50px;
-            font-weight: 600;
-            border: none;
+        .style-btn {
+            background: rgba(30, 34, 70, 0.7);
+            border: 1px solid #3c4270;
+            padding: 8px 18px;
+            border-radius: 60px;
+            font-size: 0.8rem;
+            font-weight: 500;
             cursor: pointer;
-            font-size: 1rem;
-            transition: all 0.2s ease;
-            background: #2D325A;
+            transition: all 0.2s;
+            color: #ccd6f0;
+        }
+        .style-btn.active {
+            background: #6c63ff;
+            border-color: #6c63ff;
             color: white;
+            box-shadow: 0 4px 12px rgba(108,99,255,0.4);
+        }
+        .style-btn:hover {
+            transform: translateY(-2px);
+            background: #4a44c2;
+            border-color: #8a9bf8;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #5C3E84, #2A4E6B);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        /* Аватарка */
+        .avatar-preview {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0 20px;
         }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            filter: brightness(1.05);
-        }
-
-        .btn-secondary {
-            background: rgba(138, 180, 248, 0.15);
-            border: 1px solid rgba(138, 180, 248, 0.4);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(138, 180, 248, 0.25);
-        }
-
-        /* Контейнер для аватарки */
-        .avatar-container {
-            text-align: center;
-            margin: 2rem 0;
-            padding: 1.5rem;
-            background: rgba(0,0,0,0.2);
-            border-radius: 32px;
-        }
-
-        .avatar-frame {
-            background: #0E0F1E;
+        .avatar-circle {
+            width: 220px;
+            height: 220px;
+            background: #0a0b18;
             border-radius: 50%;
-            width: 280px;
-            height: 280px;
-            margin: 0 auto 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            border: 3px solid rgba(138, 180, 248, 0.5);
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5);
+            border: 3px solid rgba(108, 99, 255, 0.6);
+            box-shadow: 0 20px 30px -10px black;
+            transition: 0.2s;
         }
-
-        .avatar-placeholder {
-            font-size: 5rem;
-            color: #5a6090;
-        }
-
-        .avatar-image {
+        .avatar-circle img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-
-        .loader {
-            display: inline-block;
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(138, 180, 248, 0.2);
+        .loading-spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(255,255,255,0.2);
+            border-top: 4px solid #8a9bf8;
             border-radius: 50%;
-            border-top-color: #8ab4f8;
-            animation: spin 1s ease-in-out infinite;
+            animation: spin 0.8s linear infinite;
         }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .info-block {
-            background: rgba(0,0,0,0.3);
-            border-radius: 24px;
-            padding: 1.5rem;
-            margin-top: 1rem;
-            text-align: center;
-            font-size: 0.9rem;
-            border: 1px dashed #5a6090;
-        }
-
-        .style-buttons {
+        /* Кнопки действий */
+        .action-buttons {
             display: flex;
-            gap: 0.6rem;
-            flex-wrap: wrap;
-            margin: 1rem 0;
+            gap: 15px;
             justify-content: center;
+            flex-wrap: wrap;
+            margin: 15px 0 20px;
         }
-
-        .style-chip {
-            background: #1E213A;
-            padding: 0.4rem 1rem;
-            border-radius: 40px;
-            font-size: 0.8rem;
+        .btn {
+            border: none;
+            padding: 12px 28px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1rem;
             cursor: pointer;
-            transition: all 0.15s;
-            border: 1px solid transparent;
+            transition: 0.2s;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary {
+            background: linear-gradient(95deg, #6c63ff, #3f3a9e);
+            color: white;
+            box-shadow: 0 6px 14px rgba(108,99,255,0.3);
+        }
+        .btn-primary:hover {
+            transform: scale(1.02);
+            filter: brightness(1.05);
+        }
+        .btn-secondary {
+            background: rgba(138, 155, 248, 0.15);
+            border: 1px solid #8a9bf8;
+            color: #d0dbff;
+        }
+        .btn-secondary:hover {
+            background: rgba(138, 155, 248, 0.3);
+            transform: translateY(-2px);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #4a4f82;
+            color: #cdd6f4;
+        }
+        .btn-outline:hover {
+            background: #2d3158;
         }
 
-        .style-chip:hover {
-            background: #2D325A;
-            border-color: #8ab4f8;
+        /* инфо блок */
+        .info-note {
+            background: rgba(0,0,0,0.3);
+            border-radius: 28px;
+            padding: 14px;
+            font-size: 0.75rem;
+            text-align: center;
+            margin-top: 20px;
+            color: #aeb9e2;
         }
 
-        @media (max-width: 640px) {
-            body {
-                padding: 1rem;
-            }
-            .avatar-frame {
-                width: 220px;
-                height: 220px;
-            }
-            h1 {
-                font-size: 1.8rem;
-            }
+        @media (max-width: 500px) {
+            .glass-card { padding: 20px; }
+            .avatar-circle { width: 170px; height: 170px; }
+            .btn { padding: 8px 18px; font-size: 0.85rem; }
+            h1 { font-size: 1.7rem; }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="generator-card">
-        <h1>🎨 AI Генератор Аватарок</h1>
-        <p class="subtitle">Опишите свою идеальную аватарку — ИИ нарисует её за секунды!</p>
+<div class="glass-card">
+    <h1>✨ AI-аватарка по тексту</h1>
+    <div class="sub">Опишите характер, стиль или образ — получите уникальную аватарку</div>
 
-        <div class="input-group">
-            <label>🧙‍♀️ Что должно быть на аватарке?</label>
-            <textarea id="promptInput" rows="4" placeholder="Примеры: рыцарь с фиолетовыми волосами и киберпанк-очками / милый лисёнок-волшебник в шляпе / абстрактный космический портрет в неоновых тонах..."></textarea>
-        </div>
+    <div class="input-group">
+        <label>📝 Ваше описание (на любом языке)</label>
+        <textarea id="promptInput" rows="3" placeholder="Пример: дерзкий космический пилот, милый кот с шарфом, тёмный эльф с фиолетовыми глазами..."></textarea>
+    </div>
 
-        <div class="style-buttons">
-            <span style="color:#9ca3d0; font-size:0.9rem;">🎭 Стиль:</span>
-            <div class="style-chip" data-style="digital art, cyberpunk, vibrant colors">Киберпанк</div>
-            <div class="style-chip" data-style="fantasy, magical, glowing">Фэнтези</div>
-            <div class="style-chip" data-style="cartoon, cute, kawaii">Кавайный</div>
-            <div class="style-chip" data-style="minimalist, line art, geometric">Минимализм</div>
-            <div class="style-chip" data-style="watercolor, soft, artistic">Акварель</div>
+    <div class="style-selector">
+        <label>🎨 Выберите стиль аватарки</label>
+        <div class="style-buttons" id="styleContainer">
+            <!-- стили подставятся через JS, но можно и вручную -->
         </div>
+    </div>
 
-        <div class="button-group">
-            <button class="btn btn-primary" id="generateBtn">✨ Сгенерировать аватарку</button>
-            <button class="btn btn-secondary" id="downloadBtn" style="display:none;">💾 Скачать PNG</button>
+    <div class="avatar-preview">
+        <div class="avatar-circle" id="avatarCircle">
+            <div class="loading-spinner" id="spinner" style="display: none;"></div>
+            <img id="avatarImg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle fill='%23333366' cx='50' cy='50' r='50'/%3E%3Ctext x='50' y='67' text-anchor='middle' fill='white' font-size='40' font-family='Arial'%3E🎭%3C/text%3E%3C/svg%3E" alt="avatar">
         </div>
+    </div>
 
-        <div class="avatar-container">
-            <div class="avatar-frame" id="avatarFrame">
-                <div class="avatar-placeholder" id="avatarPlaceholder">🤖</div>
-                <img id="avatarImage" class="avatar-image" style="display: none;" alt="Ваша аватарка">
-            </div>
-            <div id="statusText" style="font-size: 0.85rem; color: #9ca3d0;">Напишите описание и нажмите «Сгенерировать»</div>
-        </div>
+    <div class="action-buttons">
+        <button class="btn btn-primary" id="generateBtn">🎨 Создать аватарку</button>
+        <button class="btn btn-secondary" id="downloadBtn">💾 Скачать PNG</button>
+        <button class="btn btn-outline" id="randomStyleBtn">🎲 Случайный стиль</button>
+    </div>
 
-        <div class="info-block">
-            <p>⚡ <strong>Как это работает?</strong> Нейросеть превращает ваш текст в уникальное изображение. Сервис бесплатный, без регистрации. Аватарку можно скачать и использовать где угодно.</p>
-        </div>
+    <div class="info-note">
+        🔮 DiceBear AI генерирует векторную аватарку на основе вашего текста и выбранного стиля.<br>
+        Миллионы комбинаций — каждая картинка уникальна. Нажмите «Создать» и получите результат за долю секунды.
     </div>
 </div>
 
 <script>
-    // Основной сервис — Pollinations.AI (API, бесплатный, без ключа)
-    // Альтернативное API на случай проблем
-    let currentImageUrl = null;
+    // ---------- Доступные стили DiceBear (9.x) ----------
+    const AVATAR_STYLES = [
+        "adventurer", "adventurer-neutral", "avataaars", "big-ears", "big-smile",
+        "bottts", "croodles", "dylan", "fun-emoji", "icons", "identicon",
+        "lorelei", "micah", "miniavs", "open-peeps", "personas", "pixel-art"
+    ];
 
-    function getPromptWithStyle() {
-        let basePrompt = document.getElementById('promptInput').value.trim();
-        if (!basePrompt) {
-            basePrompt = "красивая стилизованная аватарка, digital art, фэнтезийный портрет, яркие цвета";
-        }
+    // Состояние
+    let currentStyle = "pixel-art";    // стиль по умолчанию
+    let currentSeed = "default";
+    let currentImageBlob = null;
 
-        // Если есть активный стиль
-        if (window.selectedStyle) {
-            return `${basePrompt}, ${window.selectedStyle}, avatar, profile picture, beautiful, detailed, high quality`;
+    // DOM элементы
+    const promptInput = document.getElementById('promptInput');
+    const generateBtn = document.getElementById('generateBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const randomStyleBtn = document.getElementById('randomStyleBtn');
+    const avatarImg = document.getElementById('avatarImg');
+    const spinner = document.getElementById('spinner');
+    const styleContainer = document.getElementById('styleContainer');
+
+    // Функция: текст -> seed (стабильное уникальное значение)
+    function textToSeed(text) {
+        if (!text.trim()) text = "dream avatar";
+        let hash = 0;
+        for (let i = 0; i < text.length; i++) {
+            hash = ((hash << 5) - hash) + text.charCodeAt(i);
+            hash |= 0;
         }
-        return `${basePrompt}, avatar, profile picture, beautiful, detailed, high quality`;
+        // делаем положительное число в виде строки
+        let positiveHash = Math.abs(hash).toString(36);
+        // Добавим небольшой рандомный соль, но чтобы текст давал всегда одинаковый seed – оставим как есть
+        return positiveHash;
     }
 
-    // Генерация через Pollinations
-    async function generateWithPollinations(prompt) {
-        // API Pollinations: https://image.pollinations.ai/prompt/...
-        const encodedPrompt = encodeURIComponent(prompt);
-        const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=512&height=512&nologo=true&model=flux`;
-        return imageUrl;
+    // Генерация URL аватарки по стилю и seed (с дополнительными параметрами для красоты)
+    function buildAvatarUrl(style, seed) {
+        // Добавим приятный фон (светлые тона) и radius=50 (круглая аватарка)
+        // Можно также добавить случайные аксессуары, но оставим чисто seed
+        let baseUrl = `https://api.dicebear.com/9.x/${style}/svg?seed=${seed}&backgroundColor=b6e3f4,ffd5dc,c0aede,ffc3a0&radius=50`;
+        // некоторые стили лучше работают с опцией "flip" или "eyes", но необязательно
+        return baseUrl;
     }
 
-    // Резервная генерация через оригинальный эндпоинт
-    async function generateBackup(prompt) {
-        const encodedPrompt = encodeURIComponent(prompt);
-        return `https://image.pollinations.ai/prompt/${encodedPrompt}`;
-    }
-
-    async function generateAvatar() {
-        const prompt = getPromptWithStyle();
-        if (!prompt) {
-            alert("Введите описание аватарки");
-            return;
-        }
-
-        const avatarFrame = document.getElementById('avatarFrame');
-        const avatarImg = document.getElementById('avatarImage');
-        const placeholder = document.getElementById('avatarPlaceholder');
-        const statusDiv = document.getElementById('statusText');
-        const downloadBtn = document.getElementById('downloadBtn');
-        const generateBtn = document.getElementById('generateBtn');
-
-        // UI: показываем лоадер
-        statusDiv.innerHTML = '<span class="loader"></span> ИИ рисует аватарку...';
-        placeholder.style.display = 'none';
+    // Обновить аватарку (показать загрузку и загрузить новую картинку)
+    async function updateAvatar(style, seed) {
+        // Показываем спиннер, прячем картинку
+        spinner.style.display = 'block';
         avatarImg.style.display = 'none';
-        downloadBtn.style.display = 'none';
-        generateBtn.disabled = true;
+        downloadBtn.disabled = true;
 
+        const url = buildAvatarUrl(style, seed);
+
+        // Предзагружаем изображение, чтобы получить blob для скачивания
         try {
-            // Пробуем основной метод
-            let imageUrl = await generateWithPollinations(prompt);
-            currentImageUrl = imageUrl;
-
-            avatarImg.src = imageUrl;
-            avatarImg.style.display = 'block';
-            statusDiv.innerHTML = '✅ Готово! Кликните правой кнопкой мыши или нажмите «Скачать PNG», чтобы сохранить аватарку.';
-            downloadBtn.style.display = 'inline-block';
-
-            // Небольшой костыль для загрузки через fetch (из-за кешей)
-            avatarImg.onerror = async () => {
-                console.log("Ошибка загрузки, пробуем резервный URL");
-                const fallbackUrl = await generateBackup(prompt);
-                currentImageUrl = fallbackUrl;
-                avatarImg.src = fallbackUrl;
-                statusDiv.innerHTML = '✅ Аватарка готова (альтернативный источник).';
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Ошибка загрузки');
+            const blob = await response.blob();
+            currentImageBlob = blob;
+            const objectUrl = URL.createObjectURL(blob);
+            avatarImg.onload = () => {
+                URL.revokeObjectURL(objectUrl);
+                spinner.style.display = 'none';
+                avatarImg.style.display = 'block';
+                downloadBtn.disabled = false;
             };
-        } catch (error) {
-            console.error(error);
-            statusDiv.innerHTML = '❌ Что-то пошло не так. Попробуйте изменить описание или повторить через минуту.';
-            placeholder.style.display = 'flex';
-            avatarImg.style.display = 'none';
-        } finally {
-            generateBtn.disabled = false;
+            avatarImg.onerror = () => {
+                spinner.style.display = 'none';
+                avatarImg.style.display = 'block';
+                avatarImg.src = url; // fallback
+                downloadBtn.disabled = false;
+            };
+            avatarImg.src = objectUrl;
+        } catch (err) {
+            console.warn(err);
+            // fallback: прямая ссылка, но может не дать blob для скачивания
+            avatarImg.src = url;
+            spinner.style.display = 'none';
+            avatarImg.style.display = 'block';
+            downloadBtn.disabled = false;
+            // попробуем получить blob повторно через img
+            fetch(url).then(r=>r.blob()).then(b=>currentImageBlob=b).catch(e=>console.log);
         }
     }
 
-    // Скачивание PNG (конвертируем изображение в blob)
-    async function downloadImage() {
-        const img = document.getElementById('avatarImage');
-        if (!img.src || img.style.display === 'none') {
+    // Генерация по текущему тексту и стилю
+    function generateFromPrompt() {
+        let promptText = promptInput.value.trim();
+        if (!promptText) {
+            promptText = "волшебный дракон, абстракция, красивая аватарка";
+            promptInput.value = promptText;
+        }
+        const seed = textToSeed(promptText);
+        currentSeed = seed;
+        updateAvatar(currentStyle, currentSeed);
+    }
+
+    // Скачать PNG (через canvas для конвертации SVG -> PNG)
+    async function downloadPNG() {
+        if (!avatarImg.src || avatarImg.src === "" || avatarImg.style.display === 'none') {
             alert("Сначала сгенерируйте аватарку");
             return;
         }
 
-        try {
-            const response = await fetch(img.src);
-            const blob = await response.blob();
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            const promptPreview = document.getElementById('promptInput').value.trim().slice(0, 30) || "avatar";
-            link.download = `avatar_${Date.now()}.png`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-        } catch (err) {
-            alert("Не удалось скачать. Попробуйте сохранить изображение через правую кнопку мыши.");
+        // Если у нас есть blob текущего изображения, используем его, иначе конвертируем через canvas
+        let imageBlob = currentImageBlob;
+        if (!imageBlob) {
+            try {
+                const resp = await fetch(avatarImg.src);
+                imageBlob = await resp.blob();
+            } catch(e) {
+                alert("Не удалось сохранить, попробуйте правой кнопкой мыши");
+                return;
+            }
+        }
+
+        // Если это SVG, лучше сконвертировать в PNG через canvas
+        if (imageBlob.type === 'image/svg+xml' || avatarImg.src.includes('.svg')) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            const url = URL.createObjectURL(imageBlob);
+            img.crossOrigin = "Anonymous";
+            const loadPromise = new Promise((resolve, reject) => {
+                img.onload = () => {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    URL.revokeObjectURL(url);
+                    canvas.toBlob(blob => {
+                        resolve(blob);
+                    }, 'image/png');
+                };
+                img.onerror = reject;
+            });
+            img.src = url;
+            const pngBlob = await loadPromise;
+            const downloadUrl = URL.createObjectURL(pngBlob);
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            a.download = `avatar_${currentStyle}_${Date.now()}.png`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(downloadUrl);
+        } else {
+            // если уже png/jpg
+            const downloadUrl = URL.createObjectURL(imageBlob);
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            a.download = `avatar_${currentStyle}_${Date.now()}.png`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(downloadUrl);
         }
     }
 
-    // Выбор стиля
-    window.selectedStyle = '';
-    document.querySelectorAll('.style-chip').forEach(chip => {
-        chip.addEventListener('click', () => {
-            document.querySelectorAll('.style-chip').forEach(c => c.style.borderColor = 'transparent');
-            chip.style.borderColor = '#8ab4f8';
-            window.selectedStyle = chip.getAttribute('data-style');
+    // Установить активный стиль в UI
+    function setActiveStyle(styleName) {
+        currentStyle = styleName;
+        // обновить активную кнопку
+        document.querySelectorAll('.style-btn').forEach(btn => {
+            if (btn.getAttribute('data-style') === styleName) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
         });
-    });
-
-    // Установка примеров в поле по клику (доп. удобство)
-    const examples = [
-        "Рыцарь с фиолетовыми волосами и киберпанк-очками",
-        "Милый лисёнок-волшебник в остроконечной шляпе",
-        "Абстрактный космический портрет в неоновых тонах",
-        "Аниме-девушка с радужными глазами и огненными волосами",
-        "Минималистичный геометрический логотип-лицо"
-    ];
-    let exampleIndex = 0;
-    const textarea = document.getElementById('promptInput');
-    // Пример при фокусе если пусто
-    textarea.addEventListener('focus', () => {
-        if (!textarea.value.trim()) {
-            textarea.value = examples[exampleIndex % examples.length];
-            exampleIndex++;
+        // перегенерировать с тем же seed, но новым стилем
+        if (currentSeed && currentSeed !== "default") {
+            updateAvatar(currentStyle, currentSeed);
+        } else if (promptInput.value.trim()) {
+            generateFromPrompt();
+        } else {
+            // если нет текста, создадим seed из текста по умолчанию
+            let fallbackText = promptInput.value.trim();
+            if (!fallbackText) fallbackText = "креативная аватарка";
+            const seed = textToSeed(fallbackText);
+            currentSeed = seed;
+            updateAvatar(currentStyle, currentSeed);
         }
-    });
+    }
 
-    // Обработчики кнопок
-    document.getElementById('generateBtn').addEventListener('click', generateAvatar);
-    document.getElementById('downloadBtn').addEventListener('click', downloadImage);
+    // Создать кнопки стилей
+    function buildStyleButtons() {
+        styleContainer.innerHTML = '';
+        AVATAR_STYLES.forEach(style => {
+            const btn = document.createElement('div');
+            btn.className = 'style-btn';
+            if (style === currentStyle) btn.classList.add('active');
+            btn.textContent = style.replace('-', ' ').replace(/(?:^|\s)\S/g, a => a.toUpperCase());
+            btn.setAttribute('data-style', style);
+            btn.addEventListener('click', () => {
+                setActiveStyle(style);
+            });
+            styleContainer.appendChild(btn);
+        });
+    }
 
-    // Приветственное сообщение с советом
-    setTimeout(() => {
-        if (!textarea.value) {
-            textarea.value = "милый космический кот в скафандре на фоне звёзд, цифровая иллюстрация";
-        }
-    }, 500);
+    // Случайный стиль
+    function randomStyle() {
+        const randomIndex = Math.floor(Math.random() * AVATAR_STYLES.length);
+        const newStyle = AVATAR_STYLES[randomIndex];
+        setActiveStyle(newStyle);
+    }
+
+    // Инициализация
+    function init() {
+        buildStyleButtons();
+        // Установим первый активный стиль по умолчанию (pixel-art)
+        setActiveStyle('pixel-art');
+        // Генерация примера при загрузке (по умолчанию)
+        promptInput.value = "киберпанк-фокусник с неоновым шарфом";
+        generateFromPrompt();
+
+        generateBtn.addEventListener('click', generateFromPrompt);
+        downloadBtn.addEventListener('click', downloadPNG);
+        randomStyleBtn.addEventListener('click', randomStyle);
+    }
+
+    init();
 </script>
 </body>
 </html>
